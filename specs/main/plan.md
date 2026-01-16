@@ -1,104 +1,101 @@
-# Implementation Plan: [FEATURE]
+# Speckit Plan: AI Chatbot
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
+**Date**: 2026-01-17
+**Constitution**: [Phase 3 Constitution](specs/constitution-phase3.md)
 
-**Note**: This template is filled in by the `/sp.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
+## 1. Summary
 
-## Summary
+This document outlines the architectural plan for integrating an AI-powered chatbot into the existing application, as per the Phase 3 goal. The plan adheres to the principles of a stateless backend, MCP-only access, and reuse of existing security mechanisms.
 
-[Extract from feature spec: primary requirement + technical approach from research]
+## 2. Overall Architecture
 
-## Technical Context
+The architecture will consist of three main parts: the existing frontend, the existing backend, and a new AI Agent service.
 
-<!--
-  ACTION REQUIRED: Replace the content in this section with the technical details
-  for the project. The structure here is presented in advisory capacity to guide
-  the iteration process.
--->
+-   **Frontend**: The existing Next.js frontend will be updated with a new chat interface for users to interact with the AI chatbot.
+-   **Backend**: The existing FastAPI backend will be extended with new endpoints to handle chat-related functionalities. It will remain stateless, with conversation state managed in the database.
+-   **AI Agent**: A new service responsible for processing user messages, interacting with the MCP to perform actions, and generating responses.
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+## 3. Component Responsibilities
 
-## Constitution Check
+### 3.1. Frontend
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+-   Render the chat interface.
+-   Manage the local state of the conversation (e.g., displaying messages).
+-   Send user messages to the backend.
+-   Receive and display responses from the AI Agent.
 
-[Gates determined based on constitution file]
+### 3.2. Backend (FastAPI)
 
-## Project Structure
+-   Provide an API endpoint to receive chat messages from the frontend.
+-   Authenticate and authorize user requests using existing Phase 2 mechanisms.
+-   Forward user messages to the AI Agent.
+-   Persist conversation history to the database via the MCP.
+-   Stream responses from the AI Agent back to the frontend.
 
-### Documentation (this feature)
+### 3.3. AI Agent
 
-```text
-specs/[###-feature]/
-├── plan.md              # This file (/sp.plan command output)
-├── research.md          # Phase 0 output (/sp.plan command)
-├── data-model.md        # Phase 1 output (/sp.plan command)
-├── quickstart.md        # Phase 1 output (/sp.plan command)
-├── contracts/           # Phase 1 output (/sp.plan command)
-└── tasks.md             # Phase 2 output (/sp.tasks command - NOT created by /sp.plan)
-```
+-   Receive and understand user's natural language messages.
+-   Decide on the appropriate tool to use from the MCP to fulfill the user's request.
+-   Execute tools via the MCP.
+-   Generate user-facing responses.
+-   Does not have direct access to the database or other infrastructure.
 
-### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
+### 3.4. Master Control Plane (MCP)
 
-```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
+-   Expose a set of tools (APIs) for the AI Agent to interact with the system (e.g., `create_task`, `list_tasks`).
+-   Enforce business logic and access control.
+-   Interact with the database to read or modify data.
 
-tests/
-├── contract/
-├── integration/
-└── unit/
+## 4. Chat Request Lifecycle
 
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
+1.  **User**: Enters a message in the frontend chat interface and clicks "send".
+2.  **Frontend**: Makes a POST request to the backend's `/chat` endpoint with the user's message.
+3.  **Backend**:
+    -   Authenticates the request.
+    -   Forwards the message to the AI Agent service.
+4.  **AI Agent**:
+    -   Receives the message.
+    -   Processes the message to understand intent.
+    -   Selects an appropriate tool from the MCP (e.g., `list_tasks`).
+    -   Calls the selected MCP tool.
+5.  **MCP**:
+    -   Executes the tool's logic (e.g., queries the database for tasks).
+    -   Returns the result to the AI Agent.
+6.  **AI Agent**:
+    -   Receives the result from the MCP.
+    -   Generates a natural language response for the user.
+    -   Sends the response back to the backend.
+7.  **Backend**:
+    -   Receives the response from the AI agent.
+    -   Persists the user message and the agent's response to the database via the MCP.
+    -   Streams the response back to the frontend.
+8.  **Frontend**: Receives the response and displays it to the user.
 
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
+## 5. Data Flow: Agent -> MCP -> DB
 
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
+-   The **AI Agent** needs to perform an action (e.g., create a task).
+-   It calls the corresponding tool on the **MCP** (e.g., `mcp.tasks.create(title="...")`).
+-   The **MCP** receives the request, validates it, and then executes the necessary database operations (e.g., `INSERT INTO tasks ...`).
+-   The AI Agent never directly interacts with the database.
 
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
-```
+## 6. Frontend Chat Flow
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+-   The user is presented with a chat widget.
+-   The conversation history is loaded from the backend and displayed.
+-   The user can type a message and send it.
+-   The message appears in the chat history with a "pending" status.
+-   Once the response is received from the backend, the "pending" status is removed, and the agent's response is displayed.
+-   The conversation scrolls automatically to the latest message.
 
-## Complexity Tracking
+## 7. Error Handling Strategy
 
-> **Fill ONLY if Constitution Check has violations that must be justified**
-
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+-   **Frontend**:
+    -   If the backend API returns an error, display a user-friendly error message in the chat interface (e.g., "Sorry, I'm having trouble connecting. Please try again later.").
+    -   Implement retries with exponential backoff for transient network errors.
+-   **Backend**:
+    -   Catch errors from the AI Agent and MCP.
+    -   Log errors for debugging purposes.
+    -   Return appropriate HTTP status codes to the frontend (e.g., 500 for internal server errors, 401 for authentication issues).
+-   **AI Agent**:
+    -   If a tool execution from the MCP fails, the agent should formulate a response to the user indicating the failure (e.g., "I was unable to create your task. Please try again.").
+    -   If the agent cannot understand the user's request, it should ask for clarification.
