@@ -5,7 +5,7 @@
 ## Phase 1: Setup
 
 - [X] T3-01 Create project directories for AI Agent service.
-- [ ] T3-02 Initialize a new project for the AI Agent service.
+- [X] T3-02 Initialize a new project for the AI Agent service.
 
 ## Phase 2: Foundational Tasks (Database and MCP)
 
