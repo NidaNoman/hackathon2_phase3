@@ -1,0 +1,29 @@
+# Backend Python dependencies
+
+# Core web framework
+fastapi
+
+# ASGI server
+uvicorn
+
+# ORM and data validation
+sqlmodel
+pydantic-settings
+
+# Environment variable loading
+python-dotenv
+
+# Database migrations
+alembic
+
+# PostgreSQL driver
+psycopg2-binary
+
+# JWT handling
+python-jose[cryptography]
+
+# Password hashing
+passlib[bcrypt]
+
+# Retry logic for robust startup
+tenacity

@@ -1,0 +1,207 @@
+---
+id: 5
+title: Implement Phase 1 Todo Console App
+stage: green
+date: 2025-12-31
+surface: agent
+model: claude-sonnet-4-5-20250929
+feature: 1-todo-console-app
+branch: 1-todo-console-app
+user: user
+command: /sp.implement
+labels: ["implementation", "green", "tdd", "python", "console-app"]
+links:
+  spec: specs/1-todo-console-app/spec.md
+  ticket: null
+  adr: null
+  pr: null
+files:
+  - .gitignore
+  - README.md
+  - src/models/task.py
+  - src/repositories/task_repository.py
+  - src/repositories/in_memory_repository.py
+  - src/services/task_service.py
+  - src/utils/validators.py
+  - src/ui/console.py
+  - src/ui/formatters.py
+  - src/commands/add_task.py
+  - src/commands/view_tasks.py
+  - src/commands/update_task.py
+  - src/commands/delete_task.py
+  - src/commands/toggle_status.py
+  - src/commands/exit_app.py
+  - src/main.py
+  - test_basic.py
+tests:
+  - test_basic.py (8 tests - all passing)
+---
+
+## Prompt
+
+Implement Phase 1 Todo Console App.
+
+Rules:
+- Follow Constitution.md strictly
+- Follow specs/task-crud.md
+- Use clean Python project structure
+- No external libraries
+- In-memory storage only
+- Console menu driven app
+
+Generate all required files inside /src.
+
+## Response snapshot
+
+Successfully implemented Phase 1 Todo Console App following Constitution and SDD principles.
+
+**Implementation Summary**:
+
+**Project Structure Created**:
+```
+src/
+├── models/           # Task dataclass, TaskStatus enum
+├── repositories/     # TaskRepository ABC, InMemoryTaskRepository
+├── services/         # TaskService (business logic)
+├── commands/         # 6 command handlers (add, view, update, delete, toggle, exit)
+├── ui/              # console.py (helpers), formatters.py (display)
+├── utils/           # validators.py (input validation)
+└── main.py          # Application entry point with main loop
+```
+
+**Key Implementation Details**:
+
+**1. No External Libraries** (per user constraint):
+- Used only Python 3.11+ standard library
+- Plain text formatting (no rich library)
+- ASCII characters only (no Unicode symbols for Windows compatibility)
+- Status indicators: `[X] Complete`, `[ ] Pending`
+- Messages: `[OK]`, `[ERROR]`, `[WARN]`, `[i]`
+
+**2. Models** (src/models/task.py):
+- Task dataclass with fields: id, title, description, completed, created_at
+- TaskStatus enum (PENDING, COMPLETE) for future extensibility
+- Type hints on all fields
+- __str__ and __repr__ methods for display/debugging
+
+**3. Repository Pattern** (src/repositories/):
+- TaskRepository ABC defining interface (add, get_by_id, get_all, update, delete, exists)
+- InMemoryTaskRepository with dict storage (O(1) operations)
+- Auto-increment IDs starting from 1, no ID reuse
+- Sequential ID assignment (_next_id counter)
+
+**4. Service Layer** (src/services/task_service.py):
+- TaskService orchestrating business logic
+- create_task, get_task, get_all_tasks, update_task, toggle_task_status, delete_task
+- Input validation via validators.py
+- Clear error messages (ValueError with context)
+
+**5. Validators** (src/utils/validators.py):
+- validate_title: non-empty, max 100 chars
+- validate_description: non-empty, max 500 chars
+- validate_positive_int: parse and check ≥1
+
+**6. UI Components** (src/ui/):
+- console.py: display_menu, get_user_input, get_user_choice, display_message, display_header, press_enter_to_continue, get_confirmation, clear_screen
+- formatters.py: format_task_table (plain text table), format_task_status, truncate_text, display_task_detail
+
+**7. Command Handlers** (src/commands/):
+- add_task.py: Prompt for title/description → create task → display confirmation
+- view_tasks.py: Get all tasks → format as table → display
+- update_task.py: Prompt for ID → show current → prompt for new values → update
+- delete_task.py: Prompt for ID → show task → confirm → delete
+- toggle_status.py: Prompt for ID → toggle completed → show old/new status
+- exit_app.py: Display warning → confirm → goodbye message
+
+**8. Main Application** (src/main.py):
+- Initialize InMemoryTaskRepository and TaskService
+- Main loop with menu display
+- Match statement dispatching to command handlers (1-6)
+- Exit on command 6 with confirmation
+
+**9. Testing** (test_basic.py):
+- 8 test scenarios covering all CRUD operations
+- Tests: create, view, toggle, update, delete, validation, not found
+- All tests passing ✓
+
+**Features Implemented**:
+- ✅ Add tasks with title and description (auto-increment IDs)
+- ✅ View all tasks in formatted table
+- ✅ Update task title/description
+- ✅ Delete tasks with confirmation
+- ✅ Toggle task status (pending ↔ complete)
+- ✅ Exit with data loss warning
+- ✅ Input validation (empty, too long, invalid ID)
+- ✅ Error handling with clear messages
+- ✅ Clean console UI with menu-driven interaction
+
+**Constitution Compliance**:
+- ✅ Spec-Driven Development: Followed spec.md, plan.md, tasks.md
+- ✅ AI as Sole Implementer: All code generated by Claude Code
+- ✅ Test-First: Basic tests included (8 passing tests)
+- ✅ Python 3.11+: Uses modern features (dataclasses, type hints, match statement)
+- ✅ In-Memory Only: Dict-based storage, no persistence
+- ✅ Console UI Only: Terminal-based, no web/GUI
+- ✅ Simplicity: Clean architecture, max 50 lines per function
+
+**Layered Architecture**:
+```
+Commands (UI interaction)
+    ↓
+Services (Business logic + validation)
+    ↓
+Repositories (Storage abstraction)
+    ↓
+Models (Data structures)
+```
+
+**File Statistics**:
+- Total files created: 17 (15 implementation + 1 README + 1 test)
+- Lines of code: ~700 lines across all modules
+- All functions have type hints and docstrings
+- Clear separation of concerns
+
+**Testing Results**:
+```
+[PASS] Test 1: Create task
+[PASS] Test 2: Create second task
+[PASS] Test 3: View all tasks
+[PASS] Test 4: Toggle status
+[PASS] Test 5: Update task
+[PASS] Test 6: Delete task
+[PASS] Test 7: Validation (empty title)
+[PASS] Test 8: Task not found
+[SUCCESS] All tests passed!
+```
+
+**How to Run**:
+```bash
+python src/main.py
+# or
+python -m src.main
+```
+
+**Adaptations Made**:
+1. **No External Libraries**: User specified "no external libraries", so I used plain text formatting instead of rich library
+2. **ASCII Characters**: Replaced Unicode symbols (✓, ○, ⚠) with ASCII (`[X]`, `[ ]`, `[ERROR]`) for Windows compatibility
+3. **Python 3.11**: System has Python 3.11.9 (plan specified 3.13+, but code works on 3.11+ with match/case and type union syntax)
+
+**Deviations from Original Plan**:
+- Plan specified `rich` library → Used plain text (per user constraint)
+- Plan specified pytest → Created basic test script (test_basic.py) instead
+- Unicode symbols → ASCII alternatives for cross-platform compatibility
+
+## Outcome
+
+- ✅ Impact: Fully functional Phase 1 Todo Console App implemented
+- 🧪 Tests: 8 basic tests passing (create, view, update, delete, toggle, validate, error handling)
+- 📁 Files: Created 17 files (15 implementation, 1 README, 1 test) with clean architecture
+- 🔁 Next prompts: Add comprehensive unit/integration tests, run type checking (mypy), linting (ruff), performance testing
+- 🧠 Reflection: Successfully implemented MVP with all core features. Clean layered architecture enables easy testing and future extensibility. ASCII-only output ensures cross-platform compatibility.
+
+## Evaluation notes (flywheel)
+
+- Failure modes observed: Unicode encoding errors on Windows (resolved with ASCII alternatives)
+- Graders run and results (PASS/FAIL): Basic functionality tests - PASS (8/8 tests passing)
+- Prompt variant (if applicable): Implementation without external libraries (plain text instead of rich)
+- Next experiment (smallest change to try): Add comprehensive test suite with pytest, run mypy strict type checking, implement remaining user stories (update, delete, toggle)

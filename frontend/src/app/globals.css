@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 20% 98%; /* Soft Off-White Blue-Gray */
+    --background-secondary: 200 20% 96%; /* Slightly different hue for subtle gradient */
+    --foreground: 220 10% 20%; /* Soft Dark Gray */
+    
+    --card: 0 0% 100%; /* Pure White */
+    --card-foreground: 220 10% 20%; /* Soft Dark Gray */
+    
+    --popover: 0 0% 100%; /* Pure White */
+    --popover-foreground: 220 10% 20%; /* Soft Dark Gray */
+    
+    --primary: 260 70% 55%; /* Modern Professional Purple/Blue */
+    --primary-foreground: 0 0% 100%; /* White */
+    
+    --secondary: 210 20% 94%; /* Light Subtle Gray */
+    --secondary-foreground: 220 10% 30%; /* Medium Soft Gray */
+    
+    --muted: 210 20% 90%; /* Light Muted Blue-Gray */
+    --muted-foreground: 210 10% 50%; /* Medium Gray */
+    
+    --accent: 210 20% 94%; /* Light Subtle Gray */
+    --accent-foreground: 220 10% 30%; /* Medium Soft Gray */
+    
+    --destructive: 0 80% 60%; /* Vibrant Red */
+    --destructive-foreground: 0 0% 100%; /* White */
+
+    --success: 142 70% 40%; /* A pleasant green for success */
+    --success-foreground: 0 0% 100%; /* White */
+    
+    --border: 210 20% 90%; /* Soft Border Gray */
+    --input: 210 20% 90%; /* Soft Input Border Gray */
+    --ring: 260 70% 55%; /* Modern Professional Purple/Blue (same as primary) */
+    
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 220 15% 12%; /* Darker Soft Background */
+    --background-secondary: 230 15% 10%; /* Slightly different hue for subtle gradient in dark mode */
+    --foreground: 210 20% 80%; /* Light Desaturated Gray */
+    
+    --card: 220 15% 18%; /* Slightly Lighter Dark Card */
+    --card-foreground: 210 20% 80%; /* Light Desaturated Gray */
+    
+    --popover: 220 15% 12%; /* Darker Soft Popover */
+    --popover-foreground: 210 20% 80%; /* Light Desaturated Gray */
+    
+    --primary: 260 70% 65%; /* Lighter Modern Professional Purple/Blue for Dark Mode */
+    --primary-foreground: 220 15% 12%; /* Darker Soft Background */
+    
+    --secondary: 220 15% 25%; /* Subtle Dark Gray */
+    --secondary-foreground: 210 20% 70%; /* Medium Light Gray */
+    
+    --muted: 220 15% 25%; /* Subtle Dark Gray */
+    --muted-foreground: 220 15% 45%; /* Medium Dark Gray */
+    
+    --accent: 220 15% 25%; /* Subtle Dark Gray */
+    --accent-foreground: 210 20% 70%; /* Medium Light Gray */
+    
+    --destructive: 0 70% 45%; /* Darker Red */
+    --destructive-foreground: 210 20% 80%; /* Light Desaturated Gray */
+
+    --success: 142 70% 60%; /* Lighter green for dark mode success */
+    --success-foreground: 220 15% 12%; /* Dark background */
+    
+    --border: 220 15% 30%; /* Subtle Dark Gray Border */
+    --input: 220 15% 30%; /* Subtle Dark Gray Input Border */
+    --ring: 260 70% 65%; /* Lighter Modern Professional Purple/Blue for Dark Mode */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  .bg-grid-pattern {
+    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+    background-size: 3rem 3rem;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-bold tracking-tighter; /* Apply font-heading */
+  }
+}
