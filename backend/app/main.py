@@ -5,7 +5,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed, before_sleep_log
 from sqlmodel import Session, create_engine
 from sqlalchemy import text # <-- Import text
 
-from .api import auth, tasks
+from .api import auth, tasks, chat
 from .core.config import settings
 
 logging.basicConfig(level=logging.INFO)
@@ -64,6 +64,7 @@ app.add_middleware(
 # Include routers
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["tasks"])
+app.include_router(chat.router, prefix="/api/v1/chat", tags=["chat"])
 
 
 @app.get("/")
@@ -71,3 +72,17 @@ async def read_root():
     return {"message": "Welcome to the Phase-2 Todo Web Application Backend!"}
 
 
+@app.get("/healthz")
+async def health_check():
+    """Health check endpoint for Kubernetes probes."""
+    try:
+        engine = create_engine(settings.DATABASE_URL, pool_pre_ping=True)
+        with Session(engine) as session:
+            session.execute(text("SELECT 1"))
+        return {"status": "healthy", "database": "connected"}
+    except Exception as e:
+        from fastapi.responses import JSONResponse
+        return JSONResponse(
+            status_code=503,
+            content={"status": "unhealthy", "database": str(e)}
+        )

@@ -1,0 +1,43 @@
+===============================================================================
+  AI Todo Chatbot Application has been deployed!
+===============================================================================
+
+1. Get the application URL by running these commands:
+{{- if eq .Values.frontend.service.type "NodePort" }}
+   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ .Values.frontend.name }})
+   export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+   echo "Frontend URL: http://$NODE_IP:$NODE_PORT"
+
+   Or simply run:
+   minikube service {{ .Values.frontend.name }} --url
+{{- else if eq .Values.frontend.service.type "LoadBalancer" }}
+   NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+   You can watch the status by running:
+   kubectl get --namespace {{ .Release.Namespace }} svc -w {{ .Values.frontend.name }}
+{{- else if eq .Values.frontend.service.type "ClusterIP" }}
+   kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ .Values.frontend.name }} 3000:{{ .Values.frontend.service.port }}
+   echo "Frontend URL: http://127.0.0.1:3000"
+{{- end }}
+
+2. Check the status of your pods:
+   kubectl get pods -l "app.kubernetes.io/instance={{ .Release.Name }}"
+
+3. View logs:
+   kubectl logs -f -l "app.kubernetes.io/component=frontend"
+   kubectl logs -f -l "app.kubernetes.io/component=backend"
+
+4. Backend API is accessible at:
+   - Within the cluster: http://{{ .Values.backend.name }}:{{ .Values.backend.service.port }}
+{{- if eq .Values.backend.service.type "NodePort" }}
+   - Via NodePort (for browser access): http://<NODE_IP>:{{ .Values.backend.service.nodePort }}
+{{- end }}
+
+===============================================================================
+  Important Notes:
+===============================================================================
+
+- Ensure your secrets are properly configured (DATABASE_URL, SECRET_KEY, GEMINI_API_KEY)
+- The frontend communicates with the backend via NodePort for browser-side API calls
+- For production, consider enabling TLS and using an Ingress controller
+
+Happy coding! 🚀
