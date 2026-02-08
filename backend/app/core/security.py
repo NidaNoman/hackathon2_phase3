@@ -23,8 +23,20 @@ def _truncate_password(password: str) -> str:
     Truncate password to 72 bytes safely for bcrypt.
     Works with UTF-8 characters (including emojis).
     """
-    password_bytes = password.encode('utf-8')[:MAX_BCRYPT_BYTES]
-    return password_bytes.decode('utf-8', errors='ignore')
+    password_bytes = password.encode('utf-8')
+    if len(password_bytes) <= MAX_BCRYPT_BYTES:
+        return password
+
+    # Truncate to MAX_BCRYPT_BYTES, ensuring we don't cut in the middle of a multi-byte character
+    truncated_bytes = password_bytes[:MAX_BCRYPT_BYTES]
+
+    # If the last byte is part of a multi-byte UTF-8 character, remove bytes until we have a valid UTF-8 string
+    while truncated_bytes and truncated_bytes[-1] >= 0xF0:  # Start of 4-byte UTF-8 sequence
+        truncated_bytes = truncated_bytes[:-1]
+    while truncated_bytes and (truncated_bytes[-1] & 0xC0) == 0x80:  # Continuation byte
+        truncated_bytes = truncated_bytes[:-1]
+
+    return truncated_bytes.decode('utf-8')
 
 # ------------------------------
 # Password hashing / verification

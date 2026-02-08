@@ -27,3 +27,6 @@ passlib[bcrypt]
 
 # Retry logic for robust startup
 tenacity
+
+# AI integration
+openai

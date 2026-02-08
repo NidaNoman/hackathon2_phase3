@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "your-super-secret-jwt-key"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    OPENAI_API_KEY: str = ""
 
     # model_config will now primarily rely on os.getenv after load_dotenv
     model_config = SettingsConfigDict(extra="ignore")

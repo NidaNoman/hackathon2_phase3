@@ -5,16 +5,16 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get('accessToken')?.value; // Prefer HTTP-only cookies
+  const token = request.cookies.get('accessToken')?.value; // Look for token in cookies
 
   const protectedRoutes = ['/tasks']; // Define routes that require authentication
 
-  const isProtectedRoute = protectedRoutes.some(route => 
+  const isProtectedRoute = protectedRoutes.some(route =>
     request.nextUrl.pathname.startsWith(route)
   );
 
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/auth') || 
-                      request.nextUrl.pathname.startsWith('/login') || 
+  const isAuthRoute = request.nextUrl.pathname.startsWith('/auth') ||
+                      request.nextUrl.pathname.startsWith('/login') ||
                       request.nextUrl.pathname.startsWith('/signup');
 
   if (isProtectedRoute && !token) {

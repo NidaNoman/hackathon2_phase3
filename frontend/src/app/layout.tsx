@@ -17,10 +17,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${poppins.variable}`}>
-      <body className="bg-gradient-to-br from-gray-900 to-black font-poppins text-white">
+      <body className="bg-gradient-to-br from-gray-950 via-slate-950 to-black font-poppins text-white">
         <AuthProvider>
           <div className="flex min-h-screen flex-col">
-            <Header />
+           <Header/>
             <main className="flex-grow mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
                 {children}
             </main>

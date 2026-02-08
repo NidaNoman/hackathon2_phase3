@@ -12,6 +12,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/AlertDialog";
+import { api } from "@/lib/api";
 import { toast } from "sonner"; // Import toast
 import { Loader2, Trash2 } from "lucide-react"; // Import necessary icons for loading and delete
 import { Button } from "./ui/Button"; // Import Button
@@ -50,7 +51,11 @@ export function DeleteTaskConfirm({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+      <AlertDialogTrigger asChild>
+        <div>
+          {React.isValidElement(children) ? children : <div />}
+        </div>
+      </AlertDialogTrigger>
       <AlertDialogContent className="bg-gray-800 border-gray-700 text-white rounded-lg shadow-xl">
         <AlertDialogHeader className="border-b border-gray-700 pb-4 mb-4">
           <AlertDialogTitle className="text-2xl font-bold text-white">Are you absolutely sure?</AlertDialogTitle>

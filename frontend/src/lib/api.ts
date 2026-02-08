@@ -1,7 +1,7 @@
 // frontend/src/lib/api.ts
 // T018: Setup frontend API client for backend communication
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8001';
 
 async function request<T>(
   method: string,
