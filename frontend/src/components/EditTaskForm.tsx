@@ -87,7 +87,9 @@ export function EditTaskForm({ task, onTaskUpdated, onTaskDeleted, children }: E
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {children} {/* Render the trigger button passed as children */}
+        <div>
+          {React.isValidElement(children) ? children : <div />} {/* Render the trigger button passed as children, ensuring it's a valid element */}
+        </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] bg-gray-800 border-gray-700 text-white rounded-lg shadow-xl">
         <DialogHeader className="border-b border-gray-700 pb-4 mb-4">
@@ -141,7 +143,7 @@ export function EditTaskForm({ task, onTaskUpdated, onTaskDeleted, children }: E
             <DeleteTaskConfirm taskId={task.id} taskTitle={task.title} onDeleteSuccess={handleDeleteSuccess}>
               <Button variant="destructive" type="button" className="bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md transform transition-transform duration-200 hover:scale-105">Delete Task</Button>
             </DeleteTaskConfirm>
-            <Button type="submit" variant="primary" disabled={loading || !!titleError} className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md transform transition-transform duration-200 hover:scale-105">
+            <Button type="submit" variant="default" disabled={loading || !!titleError} className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md transform transition-transform duration-200 hover:scale-105">
               {loading ? (
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               ) : (
